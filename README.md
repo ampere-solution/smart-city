@@ -403,6 +403,33 @@ networks:
 - Run the setup script:  ./start_app.sh.  The script will pull the demo docker image from docker hub, setup the environments neccessary for this demo.
 - Open the demo at http://< your_ip_address >:3000
 
+**Demo Talking Points**
+- It’s real - live NYC DOT feeds, live Open-Meteorology weather and AQ, not a recording.
+- It’s CPU only - VLMs running in parallel on a single Arm64 server. No GPU no cloud inference.
+- It’s a pipeline, not a model - a 3-tier funnel (heuristic - VLM - temporal) for accuracy and throughput with human intervention in the loop.
+- Architecture:
+  -  real NYC DOT cameras in 5 different areas processed continuously
+  - Five dedicated VLM containers so area are isolated.  One failing doesn’t take down the others.
+  - Qwen2.5-VL 3B served through Ampere’s optimized llama.cpp build 
+  - YOLOv26s for object detection
+  - The architecture extends linearly - more cameras require more cpu cores, not more accelerators.
+- What it detects
+  - Accidents, Obstruction, Crowd, traffic density
+- Operator review (human intervention): Confirm/Decline per anomaly in the camera modal.
+- Live data & privacy
+
+**Stop the Demo**
+- Graceful stop
+```bash
+# stop_app.sh
+$ docker compose stop
+```
+- Remove the demo
+```bash
+$ docker compose down
+```
+
+
 
 
 
