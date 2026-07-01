@@ -123,7 +123,285 @@ External API
 - Open-Meteo Weather API - weather for 5 areas in NYC
 - Open-Meteo Air Quality API - US AQI + PM2.5
 
+**Demo Deployment**
+- Install docker 
+- Git clone from the repo:  
+- Download the Ampere optimized model from Hugging Face.
+  - qwen-2.5-vl-3b-instruct-Q8R16.gguf
+  - mmproj-qwen-2.5-vl-3b-instruct-Q8_0.gguf
+- Place the model inside the models/ directory.
+- docker-compose.yaml
+```yaml
+# =============================================================================
+# Smart City — 5 VLM instances (one per borough) + detector
+# Total: 60 CPU cores for VLM (12 each) + detector container
+#
+# Usage:
+#   docker compose build
+#   docker compose up -d              # continuous detection loop
+#   docker compose up -d --build      # build images and start in background
+#   docker compose up                 # foreground with logs
+#   docker compose run detector --once  # single pass then exit
+#   docker compose down               # stop everything
+# =============================================================================
 
+services:
+  # ──────────────────────────────────────────────────────────────
+  # VLM Instances — Qwen2.5-VL 3B via llama-server
+  # Each instance: 10 threads, pinned to dedicated CPU cores
+  # ──────────────────────────────────────────────────────────────
+
+  vlm-bronx:
+    build:
+      context: ./docker/llama-server
+      dockerfile: Dockerfile
+    container_name: smartcity-vlm-bronx
+    ports:
+      - "18080:8080"
+    volumes:
+      - ./models:/models:ro
+    command: >
+      --model /models/qwen2.5-vl/qwen-2.5-vl-3b-instruct-Q8R16.gguf
+      --mmproj /models/qwen2.5-vl/mmproj-qwen-2.5-vl-3b-instruct-Q8_0.gguf
+      --host 0.0.0.0
+      --port 8080
+      -t 12
+      -c 2048
+      -n 256
+      --metrics
+      --batch-size 512
+      --flash-attn on
+    cpuset: "120-131"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
+    networks:
+      - smartcity
+
+  vlm-brooklyn:
+    build:
+      context: ./docker/llama-server
+      dockerfile: Dockerfile
+    container_name: smartcity-vlm-brooklyn
+    ports:
+      - "18081:8080"
+    volumes:
+      - ./models:/models:ro
+    command: >
+      --model /models/qwen2.5-vl/qwen-2.5-vl-3b-instruct-Q8R16.gguf
+      --mmproj /models/qwen2.5-vl/mmproj-qwen-2.5-vl-3b-instruct-Q8_0.gguf
+      --host 0.0.0.0
+      --port 8080
+      -t 12
+      -c 2048
+      -n 256
+      --metrics
+      --batch-size 512
+      --flash-attn on
+    cpuset: "132-143"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
+    networks:
+      - smartcity
+
+  vlm-manhattan:
+    build:
+      context: ./docker/llama-server
+      dockerfile: Dockerfile
+    container_name: smartcity-vlm-manhattan
+    ports:
+      - "18082:8080"
+    volumes:
+      - ./models:/models:ro
+    command: >
+      --model /models/qwen2.5-vl/qwen-2.5-vl-3b-instruct-Q8R16.gguf
+      --mmproj /models/qwen2.5-vl/mmproj-qwen-2.5-vl-3b-instruct-Q8_0.gguf
+      --host 0.0.0.0
+      --port 8080
+      -t 12
+      -c 2048
+      -n 256
+      --metrics
+      --batch-size 512
+      --flash-attn on
+    cpuset: "144-155"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
+    networks:
+      - smartcity
+
+  vlm-queens:
+    build:
+      context: ./docker/llama-server
+      dockerfile: Dockerfile
+    container_name: smartcity-vlm-queens
+    ports:
+      - "18083:8080"
+    volumes:
+      - ./models:/models:ro
+    command: >
+      --model /models/qwen2.5-vl/qwen-2.5-vl-3b-instruct-Q8R16.gguf
+      --mmproj /models/qwen2.5-vl/mmproj-qwen-2.5-vl-3b-instruct-Q8_0.gguf
+      --host 0.0.0.0
+      --port 8080
+      -t 12
+      -c 2048
+      -n 256
+      --metrics
+      --batch-size 512
+      --flash-attn on
+    cpuset: "156-167"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
+    networks:
+      - smartcity
+
+  vlm-staten-island:
+    build:
+      context: ./docker/llama-server
+      dockerfile: Dockerfile
+    container_name: smartcity-vlm-staten-island
+    ports:
+      - "18084:8080"
+    volumes:
+      - ./models:/models:ro
+    command: >
+      --model /models/qwen2.5-vl/qwen-2.5-vl-3b-instruct-Q8R16.gguf
+      --mmproj /models/qwen2.5-vl/mmproj-qwen-2.5-vl-3b-instruct-Q8_0.gguf
+      --host 0.0.0.0
+      --port 8080
+      -t 12
+      -c 2048
+      -n 256
+      --metrics
+      --batch-size 512
+      --flash-attn on
+    cpuset: "168-179"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
+    networks:
+      - smartcity
+
+  # ──────────────────────────────────────────────────────────────
+  # Detector — Python app that fetches frames and queries VLMs
+  # ──────────────────────────────────────────────────────────────
+
+  detector:
+    build:
+      context: .
+      dockerfile: docker/detector/Dockerfile
+    container_name: smartcity-detector
+    volumes:
+      - ./output:/app/output
+      - ./models:/models:ro
+    environment:
+      - VLM_BRONX_URL=http://vlm-bronx:8080
+      - VLM_BROOKLYN_URL=http://vlm-brooklyn:8080
+      - VLM_MANHATTAN_URL=http://vlm-manhattan:8080
+      - VLM_QUEENS_URL=http://vlm-queens:8080
+      - VLM_STATEN_ISLAND_URL=http://vlm-staten-island:8080
+      - OUTPUT_DIR=/app/output
+      - MIN_CYCLE_INTERVAL=5
+    depends_on:
+      vlm-bronx:
+        condition: service_healthy
+      vlm-brooklyn:
+        condition: service_healthy
+      vlm-manhattan:
+        condition: service_healthy
+      vlm-queens:
+        condition: service_healthy
+      vlm-staten-island:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - smartcity
+
+  # ──────────────────────────────────────────────────────────────
+  # Runner — reads VLM detections, feeds anomaly + density pipelines,
+  #          serves dashboard JSON API on port 8090
+  # ──────────────────────────────────────────────────────────────
+
+  runner:
+    build:
+      context: .
+      dockerfile: docker/runner/Dockerfile
+    container_name: smartcity-runner
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./output:/app/output
+      - ./models:/models:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - OUTPUT_DIR=/app/output
+      - VLM_BRONX_URL=http://vlm-bronx:8080
+      - VLM_BROOKLYN_URL=http://vlm-brooklyn:8080
+      - VLM_MANHATTAN_URL=http://vlm-manhattan:8080
+      - VLM_QUEENS_URL=http://vlm-queens:8080
+      - VLM_STATEN_ISLAND_URL=http://vlm-staten-island:8080
+    depends_on:
+      detector:
+        condition: service_started
+      vlm-bronx:
+        condition: service_healthy
+      vlm-brooklyn:
+        condition: service_healthy
+      vlm-manhattan:
+        condition: service_healthy
+      vlm-queens:
+        condition: service_healthy
+      vlm-staten-island:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - smartcity
+
+  # ──────────────────────────────────────────────────────────────
+  # Dashboard — React frontend served by nginx
+  # ──────────────────────────────────────────────────────────────
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: docker/dashboard/Dockerfile
+    container_name: smartcity-dashboard
+    ports:
+      - "3030:3030"
+    restart: unless-stopped
+    networks:
+      - smartcity
+
+networks:
+  smartcity:
+    driver: bridge
+```
+- Run the setup script:  ./start_app.sh.  The script will pull the demo docker image from docker hub, setup the environments neccessary for this demo.
+- Open the demo at http://< your_ip_address >:3000
 
 
 
