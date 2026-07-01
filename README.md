@@ -112,7 +112,16 @@ Frontend (Dashboard)
 - React:19.1 - dashboard UI
 - Recharts:2.15.3 - Charts (vehicle flow, density, AQI)
 
+Infrastructure 
 
+- Docker Engine / Compose:24+. / v.2 - container orchestration
+- Docker Engine api - Per container CPU stats for system health panel
+
+External API
+
+- NYC DOT camera feeds  - live camera frames for NYC
+- Open-Meteo Weather API - weather for 5 areas in NYC
+- Open-Meteo Air Quality API - US AQI + PM2.5
 
 
 
