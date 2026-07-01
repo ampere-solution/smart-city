@@ -84,6 +84,15 @@ The Overview tab is a proof point - live DOT camera running in 5 different areas
  
 The audience can watch what happened live - the CPU bars (not GPU), the refreshing feeds (real time), the expandable tier breakdown (pipeline), and the spatial decline (ops).  The presenter isn’t asserting any claims, the dashboard demonstrates each one in real time.
 
+## Running the Demo
+
+**Recommended Resources**
+
+- Minimum: 64 cores. Recommended: 64+ cores
+- Minimum: 64GB RAM. Recommended: 64+ GB RAM
+- Minimum: 20GB disk space. Recommended: 100+ GB (multiple models, large models)
+
+
 
 
 
