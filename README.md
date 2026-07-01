@@ -72,6 +72,19 @@ The Overview tab is a proof point - live DOT camera running in 5 different areas
   - Live weather + AQ: NYC weather strip and AQ section - pulled from Open-Metro per area
   - Live aggregation: Area summary reports 
 
+- It’s a pipeline, not model
+  - The 3 tiers are visible : 3 tier confidence breakdown per event
+  - The funnel works: frame processed vs. anomalies detected - the gap proves ~90% of frames get filtered before the VLM.
+  - VLM actually see: Density is dual confirmed.  PCE 40% + VLM 60%, shown as a confirmed density level per camera
+  - Temporal lifecycle: incidents must persist across frames, not fire on one frame.
+ 
+- Human intervention / Production Ready Ops
+  - Operator review: Click any camera to Confirm/Decline buttons on anomalies
+  - Resilience: If VLM drops, the other keep running.
+ 
+The audience can watch what happened live - the CPU bars (not GPU), the refreshing feeds (real time), the expandable tier breakdown (pipeline), and the spatial decline (ops).  The presenter isn’t asserting any claims, the dashboard demonstrates each one in real time.
+
+
 
 
 
