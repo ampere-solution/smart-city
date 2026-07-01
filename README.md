@@ -51,7 +51,26 @@ This is fundamentally an Ampere Computing edge-compute showcase the underlying s
 - Municipal / transit / government stakeholders 
   - Want the outcome:  real NYC cameras, real time accidents, crowd detections, operator review workflow, 
 
+## Key Message - What are we trying to convince of?
 
+**Core message** 
+demanding, real-time computer vision AI - at municipal scale - runs economically on commodity Arm64 processors.  You don’t need GPUs or the cloud.  
+- It’s real - not a canned demo:  Live NYC DOT feeds, live weather, live AQ - every number on screen comes from a real source, refreshing in real time.
+- It’s CPU-only: Five vision language models running in parallel on a single Arm64 server.  No GPU, no cloud inference
+- It’s a pipeline, not a model:  it is feasible and affordable.  A 3 tier funnel (heuristics → VLM → temporal tracking) throws away ~90% of frames before the expensive model, giving accuracy and throughput plus a human intervention review step.  The architecture scales linearly with CPU cores, not accelerators - more cameras means more cores, not more GPUs.  The same workload at a fraction of the GPU cost.  
+- So we’re convincing that edge AI economics favor Arm64 processors, and the live NYC traffic systems is the evidence.
+
+## Proof Points - How does It Show This?
+
+The Overview tab is a proof point - live DOT camera running in 5 different areas, 3 anomaly types, traffic density, weather Air Quality, and system health - all live, simultaneously on a Arm64 server.  
+- It’s CPU only - no GPU
+  - 8 live containers, all CPU pinned: Performance tab → pipeline diagram with live per-container CPU bars updating every 3s (5 VLM, detector, runner, and dashboard)
+  - The cost consequence : Performance tab with cost comparison
+ 
+- It’s real - live
+  - Live camera feeds: Top 5 busiest strip - watch YOLO bounding boxes refresh in real time
+  - Live weather + AQ: NYC weather strip and AQ section - pulled from Open-Metro per area
+  - Live aggregation: Area summary reports 
 
 
 
