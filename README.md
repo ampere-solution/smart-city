@@ -92,6 +92,28 @@ The audience can watch what happened live - the CPU bars (not GPU), the refreshi
 - Minimum: 64GB RAM. Recommended: 64+ GB RAM
 - Minimum: 20GB disk space. Recommended: 100+ GB (multiple models, large models)
 
+**Software Stack**
+
+Inference/Models
+- Qwen2.5-VL 3B Instruct: Vision language model - Tier 2 anomaly confirm + density confirm
+- YOLOv26s -  Object detection (vehicles/persons), weather-adaptive preprocessing
+- amperecomputingai/llama.cpp:3.4.2-ampereone -  ampere optimized build
+
+Backend (detector + runner)
+
+- Python 3.13
+- httpx:0.27+ - Async http - camera feeds, VLM api
+- Pillow:10.0+ - Frame decode / downscale to 384px
+- NumPy:1.24+ - Array ops for YOLO pre and post processing
+- pandas + openpyxl:2.0+ / 3.1 + - Read xlsx camera registry.
+
+Frontend (Dashboard)
+
+- React:19.1 - dashboard UI
+- Recharts:2.15.3 - Charts (vehicle flow, density, AQI)
+
+
+
 
 
 
